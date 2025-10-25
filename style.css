@@ -1,0 +1,51 @@
+/* Custom styles for Maritime AI Dashboard presentation */
+
+.slidev-layout {
+  padding: 1.5rem 2rem !important;
+}
+
+.slidev-layout h1 {
+  margin-bottom: 0.75rem !important;
+  font-size: 2.5rem !important;
+  line-height: 1.2 !important;
+}
+
+.slidev-layout h2 {
+  margin-bottom: 0.5rem !important;
+  margin-top: 0.75rem !important;
+  font-size: 1.5rem !important;
+}
+
+.slidev-layout h3 {
+  margin-bottom: 0.4rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.slidev-layout p {
+  margin-bottom: 0.5rem !important;
+}
+
+.slidev-layout ul {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.slidev-layout li {
+  margin-bottom: 0.25rem !important;
+  line-height: 1.4 !important;
+}
+
+/* Reduce grid gap for better fit */
+.grid {
+  gap: 1.5rem !important;
+}
+
+/* Adjust v-clicks spacing */
+.slidev-vclick-target {
+  margin-bottom: 0.3rem !important;
+}
+
+/* Mermaid diagrams */
+.mermaid {
+  margin: 0.5rem 0 !important;
+}

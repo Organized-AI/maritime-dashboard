@@ -1,0 +1,31 @@
+{
+  "name": "online_chart",
+  "version": "1.0.0",
+  "description": "This project contains the frontend part for the websites:",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "slides": "slidev slides.md",
+    "slides:build": "slidev build slides.md",
+    "slides:export": "slidev export slides.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSeaMap/online_chart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/OpenSeaMap/online_chart/issues"
+  },
+  "homepage": "https://github.com/OpenSeaMap/online_chart#readme",
+  "devDependencies": {
+    "@slidev/cli": "^52.6.0",
+    "@slidev/theme-default": "^0.25.0"
+  }
+}
