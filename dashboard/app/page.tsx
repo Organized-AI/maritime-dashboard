@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FleetOverview from '@/components/FleetOverview';
 import IncidentManagement from '@/components/IncidentManagement';
 import VesselDetail from '@/components/VesselDetail';
@@ -16,6 +16,7 @@ import {
   generateMockAgents,
   generateVesselHistory,
 } from '@/lib/mockData';
+import { AISStreamService } from '@/lib/aisstream';
 import { Ship, Activity, Bell, LayoutDashboard, AlertTriangle, Moon, Sun, Map as MapIcon } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -34,9 +35,65 @@ export default function DashboardPage() {
   const [selectedVessel, setSelectedVessel] = useState<Vessel | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeView, setActiveView] = useState<'fleet' | 'incidents' | 'map'>('fleet');
+  const [useAISStream, setUseAISStream] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+  const aisServiceRef = useRef<AISStreamService | null>(null);
 
-  // Initialize mock data
+  // Initialize data (mock or AIS)
   useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_AISSTREAM_API_KEY;
+
+    if (apiKey && useAISStream) {
+      // Initialize AISStream connection
+      setConnectionStatus('connecting');
+
+      aisServiceRef.current = new AISStreamService({
+        apiKey: apiKey,
+        // You can optionally specify bounding boxes to limit the area
+        // boundingBoxes: [
+        //   {
+        //     topLeft: { latitude: 60, longitude: -10 },
+        //     bottomRight: { latitude: 40, longitude: 20 }
+        //   }
+        // ]
+      });
+
+      // Register callbacks
+      aisServiceRef.current.onUpdate((updatedVessels) => {
+        setVessels(updatedVessels);
+        setStats(calculateFleetStats(updatedVessels, incidents));
+      });
+
+      aisServiceRef.current.onIncident((incident) => {
+        setIncidents(prev => [...prev, incident]);
+      });
+
+      // Connect to AISStream
+      aisServiceRef.current.connect()
+        .then(() => {
+          setConnectionStatus('connected');
+          console.log('Connected to AISStream.io');
+        })
+        .catch(error => {
+          console.error('Failed to connect to AISStream:', error);
+          setConnectionStatus('error');
+          // Fall back to mock data
+          initializeMockData();
+        });
+
+      // Cleanup on unmount
+      return () => {
+        if (aisServiceRef.current) {
+          aisServiceRef.current.disconnect();
+        }
+      };
+    } else {
+      // Use mock data
+      initializeMockData();
+    }
+  }, [useAISStream]);
+
+  function initializeMockData() {
     const mockVessels = generateMockVessels(12);
 
     // Generate historical positions for each vessel (24 hours of history)
@@ -50,7 +107,7 @@ export default function DashboardPage() {
     setVessels(vesselsWithHistory);
     setIncidents(mockIncidents);
     setStats(calculateFleetStats(vesselsWithHistory, mockIncidents));
-  }, []);
+  }
 
   // Simulate real-time updates
   useEffect(() => {
@@ -180,17 +237,73 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* System Status Banner */}
-        <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 mb-6 rounded-r-lg">
-          <div className="flex items-center">
-            <Activity className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
-            <div>
-              <p className="text-sm font-medium text-green-800 dark:text-green-300">
-                System Status: Operational
-              </p>
-              <p className="text-xs text-green-700 dark:text-green-400 mt-1">
-                All systems functioning normally. Last data sync: {new Date(currentTime.getTime() - 12000).toLocaleTimeString()}
-              </p>
+        <div className={`border-l-4 p-4 mb-6 rounded-r-lg ${
+          connectionStatus === 'connected'
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
+            : connectionStatus === 'connecting'
+            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+            : connectionStatus === 'error'
+            ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
+            : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Activity className={`w-5 h-5 mr-3 ${
+                connectionStatus === 'connected'
+                  ? 'text-green-600 dark:text-green-400'
+                  : connectionStatus === 'connecting'
+                  ? 'text-yellow-600 dark:text-yellow-400 animate-pulse'
+                  : connectionStatus === 'error'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-blue-600 dark:text-blue-400'
+              }`} />
+              <div>
+                <p className={`text-sm font-medium ${
+                  connectionStatus === 'connected'
+                    ? 'text-green-800 dark:text-green-300'
+                    : connectionStatus === 'connecting'
+                    ? 'text-yellow-800 dark:text-yellow-300'
+                    : connectionStatus === 'error'
+                    ? 'text-red-800 dark:text-red-300'
+                    : 'text-blue-800 dark:text-blue-300'
+                }`}>
+                  {connectionStatus === 'connected' && 'AISStream.io: Connected'}
+                  {connectionStatus === 'connecting' && 'AISStream.io: Connecting...'}
+                  {connectionStatus === 'error' && 'AISStream.io: Connection Failed (Using Mock Data)'}
+                  {connectionStatus === 'disconnected' && 'Data Source: Mock Data'}
+                </p>
+                <p className={`text-xs mt-1 ${
+                  connectionStatus === 'connected'
+                    ? 'text-green-700 dark:text-green-400'
+                    : connectionStatus === 'connecting'
+                    ? 'text-yellow-700 dark:text-yellow-400'
+                    : connectionStatus === 'error'
+                    ? 'text-red-700 dark:text-red-400'
+                    : 'text-blue-700 dark:text-blue-400'
+                }`}>
+                  {connectionStatus === 'connected'
+                    ? `Real-time AIS data streaming • ${vessels.length} vessels tracked`
+                    : connectionStatus === 'connecting'
+                    ? 'Establishing WebSocket connection to AISStream.io...'
+                    : connectionStatus === 'error'
+                    ? 'Check API key and connection. Displaying simulated data.'
+                    : `Development mode • Last sync: ${new Date(currentTime.getTime() - 12000).toLocaleTimeString()}`
+                  }
+                </p>
+              </div>
             </div>
+
+            {/* Toggle AIS Stream */}
+            <button
+              onClick={() => setUseAISStream(!useAISStream)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                useAISStream
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-gray-600 hover:bg-gray-700 text-white'
+              }`}
+            >
+              {useAISStream ? 'Using AIS Stream' : 'Use AIS Stream'}
+            </button>
           </div>
         </div>
 
@@ -303,9 +416,12 @@ export default function DashboardPage() {
 
         {/* Footer Info */}
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Maritime AI Dashboard v1.0 - Data updates every 5 seconds</p>
+          <p>Maritime AI Dashboard v1.0 - {useAISStream ? 'Real-time AIS data via AISStream.io' : 'Data updates every 5 seconds'}</p>
           <p className="text-xs mt-1">
-            Mock data generated for development • Real vessel integration pending
+            {useAISStream
+              ? 'Connected to live AIS data stream • Incident detection active'
+              : 'Mock data generated for development • Toggle "Use AIS Stream" to connect to real data'
+            }
           </p>
         </div>
       </main>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AISStream Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .log {
+            background: #2a2a2a;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #4CAF50;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+        .info {
+            border-left-color: #2196F3;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-disconnected {
+            background: #f44336;
+        }
+        .status-connecting {
+            background: #ff9800;
+        }
+        .status-connected {
+            background: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>AISStream.io Connection Test</h1>
+
+    <div id="status" class="status-disconnected">Status: Disconnected</div>
+
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+
+    <h2>Connection Logs:</h2>
+    <div id="logs"></div>
+
+    <script>
+        const API_KEY = 'd16977c494a18d20befa7aa7cbf76afd3ebbf91d';
+        let socket = null;
+
+        function updateStatus(text, className) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = 'Status: ' + text;
+            statusEl.className = 'status-' + className;
+        }
+
+        function addLog(message, type = 'info') {
+            const logsEl = document.getElementById('logs');
+            const logEl = document.createElement('div');
+            logEl.className = 'log ' + type;
+            logEl.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            logsEl.insertBefore(logEl, logsEl.firstChild);
+        }
+
+        function connect() {
+            if (socket) {
+                addLog('Already connected or connecting', 'error');
+                return;
+            }
+
+            addLog('Connecting to wss://stream.aisstream.io/v0/stream...', 'info');
+            updateStatus('Connecting...', 'connecting');
+
+            socket = new WebSocket('wss://stream.aisstream.io/v0/stream');
+
+            socket.onopen = () => {
+                addLog('WebSocket connected!', 'success');
+                updateStatus('Connected', 'connected');
+
+                // Send subscription message
+                const subscription = {
+                    APIKey: API_KEY,  // NOTE: Capital K!
+                    BoundingBoxes: [
+                        [
+                            [90, -180],    // North-West
+                            [-90, 180]     // South-East
+                        ]
+                    ]
+                };
+
+                addLog('Sending subscription: ' + JSON.stringify(subscription, null, 2), 'info');
+                socket.send(JSON.stringify(subscription));
+                addLog('Subscription sent! Waiting for AIS messages...', 'success');
+            };
+
+            socket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    addLog('📡 Received: ' + data.MessageType + ' from MMSI: ' + data.MetaData.MMSI, 'success');
+                    console.log('Full message:', data);
+                } catch (error) {
+                    addLog('Error parsing message: ' + error.message, 'error');
+                }
+            };
+
+            socket.onerror = (error) => {
+                addLog('WebSocket error: ' + JSON.stringify(error), 'error');
+                updateStatus('Error', 'disconnected');
+            };
+
+            socket.onclose = (event) => {
+                addLog('Disconnected. Code: ' + event.code + ', Reason: ' + event.reason, 'error');
+                updateStatus('Disconnected', 'disconnected');
+                socket = null;
+            };
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.close();
+                socket = null;
+                addLog('Disconnected by user', 'info');
+                updateStatus('Disconnected', 'disconnected');
+            } else {
+                addLog('Not connected', 'error');
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
