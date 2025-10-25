@@ -206,10 +206,13 @@ export class AISStreamService {
       // Store historical position
       if (vessel.historicalPositions) {
         vessel.historicalPositions.push({
-          latitude: data.MetaData.latitude,
-          longitude: data.MetaData.longitude,
+          position: {
+            latitude: data.MetaData.latitude,
+            longitude: data.MetaData.longitude
+          },
           timestamp: data.MetaData.time_utc,
-          speed: posReport.Sog || 0
+          speed: posReport.Sog || 0,
+          heading: posReport.TrueHeading || posReport.Cog || 0
         });
 
         // Keep only last 100 positions
@@ -285,6 +288,7 @@ export class AISStreamService {
           ? 'Vessel not under command'
           : 'Vessel restricted maneuverability',
         location: vessel.position,
+        locationDescription: `Position: ${vessel.position.latitude.toFixed(4)}°, ${vessel.position.longitude.toFixed(4)}°`,
         timestamp: vessel.lastUpdate,
         agentRecommendation: 'Monitor vessel closely and maintain safe distance'
       });
@@ -302,6 +306,7 @@ export class AISStreamService {
         title: 'Unusual Rate of Turn Detected',
         description: `Rate of turn: ${posReport.RateOfTurn}°/min - Possible steering issue`,
         location: vessel.position,
+        locationDescription: `Position: ${vessel.position.latitude.toFixed(4)}°, ${vessel.position.longitude.toFixed(4)}°`,
         timestamp: vessel.lastUpdate,
         agentRecommendation: 'Check steering systems and rudder controls'
       });
@@ -319,6 +324,7 @@ export class AISStreamService {
         title: 'Vessel Stopped While Underway',
         description: 'Vessel appears to have stopped unexpectedly - possible engine failure',
         location: vessel.position,
+        locationDescription: `Position: ${vessel.position.latitude.toFixed(4)}°, ${vessel.position.longitude.toFixed(4)}°`,
         timestamp: vessel.lastUpdate,
         agentRecommendation: 'Contact vessel to verify operational status'
       });

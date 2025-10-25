@@ -203,8 +203,15 @@ export const generateMockWeather = (): WeatherData => {
   };
 };
 
-// Generate vessel agents
-export const generateMockAgents = (): VesselAgent[] => {
+// Import agent skills (mimics RESTful API services)
+import { generateWeatherAgentData } from './agents/weatherAgentSkills';
+import { generateNavigationAgentData } from './agents/navigationAgentSkills';
+
+/**
+ * Generate vessel agents with comprehensive data
+ * Mimics a RESTful API response where each agent endpoint returns detailed data
+ */
+export const generateMockAgents = (vessel: Vessel, weather: WeatherData): VesselAgent[] => {
   return [
     {
       type: 'weather',
@@ -212,6 +219,8 @@ export const generateMockAgents = (): VesselAgent[] => {
       lastAction: 'Monitoring storm patterns',
       timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
       confidence: randomInt(85, 99),
+      // API-like: GET /api/vessels/:id/agents/weather
+      data: generateWeatherAgentData(vessel, weather),
     },
     {
       type: 'navigation',
@@ -219,6 +228,8 @@ export const generateMockAgents = (): VesselAgent[] => {
       lastAction: 'Route optimization complete',
       timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
       confidence: randomInt(90, 99),
+      // API-like: GET /api/vessels/:id/agents/navigation
+      data: generateNavigationAgentData(vessel),
     },
     {
       type: 'incident',
@@ -226,6 +237,9 @@ export const generateMockAgents = (): VesselAgent[] => {
       lastAction: 'No incidents detected',
       timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       confidence: randomInt(95, 99),
+      // API-like: GET /api/vessels/:id/agents/incident
+      // TODO: Add incidentAgentSkills when implemented
+      data: null,
     },
     {
       type: 'compliance',
@@ -233,6 +247,9 @@ export const generateMockAgents = (): VesselAgent[] => {
       lastAction: 'Checking port regulations',
       timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
       confidence: randomInt(88, 99),
+      // API-like: GET /api/vessels/:id/agents/compliance
+      // TODO: Add complianceAgentSkills when implemented
+      data: null,
     },
     {
       type: 'communication',
@@ -240,6 +257,9 @@ export const generateMockAgents = (): VesselAgent[] => {
       lastAction: 'Satellite link stable',
       timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
       confidence: randomInt(92, 99),
+      // API-like: GET /api/vessels/:id/agents/communication
+      // TODO: Add communicationAgentSkills when implemented
+      data: null,
     },
   ];
 };

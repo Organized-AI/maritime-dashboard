@@ -85,6 +85,9 @@ export interface VesselAgent {
   lastAction: string;
   timestamp: string;
   confidence: number; // 0-100
+
+  // Agent-specific data (populated by agent skills - mimics RESTful API response)
+  data?: any; // Will be typed specifically as WeatherAgentData | NavigationAgentData | etc.
 }
 
 export interface DataQuality {

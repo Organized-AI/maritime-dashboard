@@ -17,7 +17,14 @@ import {
   generateVesselHistory,
 } from '@/lib/mockData';
 import { AISStreamService } from '@/lib/aisstream';
-import { Ship, Activity, Bell, LayoutDashboard, AlertTriangle, Moon, Sun, Map as MapIcon } from 'lucide-react';
+import { Ship, Activity, Bell, LayoutDashboard, AlertTriangle, Moon, Sun, Map as MapIcon, Bot } from 'lucide-react';
+import AgentActivityDashboard from '@/components/AgentActivityDashboard';
+import {
+  AgentActivity,
+  AgentStats,
+  generateAgentActivity,
+  calculateAgentStats,
+} from '@/lib/agentActivitySimulator';
 
 export default function DashboardPage() {
   const { theme, toggleTheme, isDarkMode } = useTheme();
@@ -34,10 +41,19 @@ export default function DashboardPage() {
   });
   const [selectedVessel, setSelectedVessel] = useState<Vessel | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [activeView, setActiveView] = useState<'fleet' | 'incidents' | 'map'>('fleet');
+  const [activeView, setActiveView] = useState<'fleet' | 'incidents' | 'map' | 'agents'>('fleet');
   const [useAISStream, setUseAISStream] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
   const aisServiceRef = useRef<AISStreamService | null>(null);
+
+  // Agent Activity State
+  const [agentActivities, setAgentActivities] = useState<AgentActivity[]>([]);
+  const [agentStats, setAgentStats] = useState<AgentStats>({
+    totalInvocations: 0,
+    activeStreams: 0,
+    avgResponseTime: 0,
+    dataPointsGenerated: 0,
+  });
 
   // Initialize data (mock or AIS)
   useEffect(() => {
@@ -143,6 +159,33 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Agent Activity Simulation
+  useEffect(() => {
+    if (vessels.length === 0) return;
+
+    // Generate initial burst of activities
+    const initialActivities = Array.from({ length: 15 }, () =>
+      generateAgentActivity(vessels)
+    );
+    setAgentActivities(initialActivities);
+
+    // Continuous generation of new activities
+    const interval = setInterval(() => {
+      setAgentActivities(prev => {
+        const newActivity = generateAgentActivity(vessels);
+        // Keep only last 100 activities for performance
+        const updated = [...prev, newActivity].slice(-100);
+
+        // Update stats
+        setAgentStats(calculateAgentStats(updated));
+
+        return updated;
+      });
+    }, 1500); // New activity every 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, [vessels]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -185,6 +228,20 @@ export default function DashboardPage() {
                 >
                   <MapIcon className="w-4 h-4" />
                   <span>Map</span>
+                </button>
+                <button
+                  onClick={() => setActiveView('agents')}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeView === 'agents'
+                      ? 'bg-white text-maritime-700'
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <Bot className="w-4 h-4" />
+                  <span>Agents</span>
+                  <span className="bg-purple-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+                    LIVE
+                  </span>
                 </button>
                 <button
                   onClick={() => setActiveView('incidents')}
@@ -345,6 +402,14 @@ export default function DashboardPage() {
               isDarkMode={isDarkMode}
             />
           </div>
+        ) : activeView === 'agents' ? (
+          <div className="mb-8">
+            <AgentActivityDashboard
+              activities={agentActivities}
+              stats={agentStats}
+              vessels={vessels}
+            />
+          </div>
         ) : (
           <div className="mb-8">
             <div className="mb-4">
@@ -427,14 +492,17 @@ export default function DashboardPage() {
       </main>
 
       {/* Vessel Detail Modal */}
-      {selectedVessel && (
-        <VesselDetail
-          vessel={selectedVessel}
-          weather={generateMockWeather()}
-          agents={generateMockAgents()}
-          onClose={() => setSelectedVessel(null)}
-        />
-      )}
+      {selectedVessel && (() => {
+        const weather = generateMockWeather();
+        return (
+          <VesselDetail
+            vessel={selectedVessel}
+            weather={weather}
+            agents={generateMockAgents(selectedVessel, weather)}
+            onClose={() => setSelectedVessel(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Vessel, WeatherData, VesselAgent } from '@/types';
 import {
   Ship,
@@ -21,7 +22,9 @@ import {
   Activity,
   CheckCircle,
   Loader,
+  ChevronRight,
 } from 'lucide-react';
+import AgentDetail from './AgentDetail';
 
 interface VesselDetailProps {
   vessel: Vessel;
@@ -31,6 +34,7 @@ interface VesselDetailProps {
 }
 
 export default function VesselDetail({ vessel, weather, agents, onClose }: VesselDetailProps) {
+  const [selectedAgent, setSelectedAgent] = useState<VesselAgent | null>(null);
   const getConnectivityColor = (status: string) => {
     switch (status) {
       case 'online': return 'text-green-500';
@@ -67,6 +71,49 @@ export default function VesselDetail({ vessel, weather, agents, onClose }: Vesse
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
+  };
+
+  // Define agent skills for each agent type
+  const getAgentSkills = (type: string): { icon: string; label: string }[] => {
+    switch (type) {
+      case 'weather':
+        return [
+          { icon: '🌦️', label: 'Forecast' },
+          { icon: '⚠️', label: 'Alerts' },
+          { icon: '📈', label: 'Trends' },
+          { icon: '💡', label: 'Recommendations' }
+        ];
+      case 'navigation':
+        return [
+          { icon: '🛣️', label: 'Route Opt' },
+          { icon: '⚓', label: 'Collision Avoid' },
+          { icon: '🚧', label: 'Hazards' },
+          { icon: '⚡', label: 'Performance' }
+        ];
+      case 'incident':
+        return [
+          { icon: '🔍', label: 'Detection' },
+          { icon: '⚖️', label: 'Risk Assessment' },
+          { icon: '📊', label: 'Monitoring' },
+          { icon: '🛡️', label: 'Response' }
+        ];
+      case 'compliance':
+        return [
+          { icon: '📋', label: 'SOLAS' },
+          { icon: '🌊', label: 'MARPOL' },
+          { icon: '👥', label: 'Crew Certs' },
+          { icon: '🏛️', label: 'Port Regs' }
+        ];
+      case 'communication':
+        return [
+          { icon: '📡', label: 'VHF' },
+          { icon: '🛰️', label: 'SATCOM' },
+          { icon: '🚢', label: 'AIS' },
+          { icon: '💬', label: 'Messaging' }
+        ];
+      default:
+        return [];
+    }
   };
 
   return (
@@ -283,35 +330,75 @@ export default function VesselDetail({ vessel, weather, agents, onClose }: Vesse
                 AI Vessel Agents
               </h3>
               <div className="space-y-3">
-                {agents.map((agent, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-slate-800 rounded-lg p-3 border border-slate-700">
-                    <div className="flex items-center space-x-3">
-                      {getAgentStatusIcon(agent.status)}
-                      <div>
-                        <p className="font-medium text-white capitalize">{agent.type} Agent</p>
-                        <p className="text-xs text-gray-400">{agent.lastAction}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2">
-                        <div className="text-xs text-gray-400">Confidence</div>
-                        <div className="bg-slate-900 rounded-full h-2 w-16">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full"
-                            style={{ width: `${agent.confidence}%` }}
-                          />
+                {agents.map((agent, idx) => {
+                  const skills = getAgentSkills(agent.type);
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedAgent(agent)}
+                      className="w-full bg-slate-800 rounded-lg p-3 border border-slate-700 hover:bg-slate-750 hover:border-purple-500 transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          {getAgentStatusIcon(agent.status)}
+                          <div className="text-left">
+                            <p className="font-medium text-white capitalize">{agent.type} Agent</p>
+                            <p className="text-xs text-gray-400">{agent.lastAction}</p>
+                          </div>
                         </div>
-                        <span className="text-xs font-semibold text-white">{agent.confidence}%</span>
+                        <div className="flex items-center space-x-3">
+                          <div className="text-right">
+                            <div className="flex items-center space-x-2">
+                              <div className="text-xs text-gray-400">Confidence</div>
+                              <div className="bg-slate-900 rounded-full h-2 w-16">
+                                <div
+                                  className="bg-purple-500 h-2 rounded-full"
+                                  style={{ width: `${agent.confidence}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-semibold text-white">{agent.confidence}%</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">{formatTimeSince(agent.timestamp)}</p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-400 transition-colors" />
+                        </div>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{formatTimeSince(agent.timestamp)}</p>
-                    </div>
-                  </div>
-                ))}
+
+                      {/* Skill Badges */}
+                      {skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-slate-700">
+                          <span className="text-xs text-gray-400">Skills:</span>
+                          {skills.map((skill, skillIdx) => (
+                            <span
+                              key={skillIdx}
+                              className="inline-flex items-center space-x-1 px-2 py-0.5 bg-purple-900/30 text-purple-300 text-xs rounded-full border border-purple-700/50"
+                              title={skill.label}
+                            >
+                              <span>{skill.icon}</span>
+                              <span>{skill.label}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              <p className="text-xs text-gray-400 mt-3 text-center">Click on any agent to view detailed information</p>
             </div>
           )}
         </div>
       </div>
+
+      {/* Agent Detail Modal */}
+      {selectedAgent && (
+        <AgentDetail
+          agent={selectedAgent}
+          vessel={vessel}
+          weather={weather}
+          onClose={() => setSelectedAgent(null)}
+        />
+      )}
     </div>
   );
 }
