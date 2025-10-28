@@ -5,12 +5,12 @@ class: text-center
 highlighter: shiki
 lineNumbers: false
 info: |
-  ## Maritime AI Dashboard
+  ## Maritime Fleet AI Dashboard
   Digital Twin of the Oceans - Vessel Intelligence & Safety System
 drawings:
   persist: false
 transition: slide-left
-title: Maritime AI Dashboard
+title: Maritime Fleet AI Dashboard
 mdc: true
 fonts:
   sans: 'Inter'
@@ -52,11 +52,11 @@ p {
 
 ---
 
-# Maritime AI Dashboard
+# Maritime Fleet AI Dashboard
 
 **Digital Twin of the Oceans**
 
-Vessel Intelligence & Safety System
+Vessel Intelligence & Safety System for International Cargo Operations
 
 <div class="pt-12">
   <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
@@ -65,77 +65,132 @@ Vessel Intelligence & Safety System
 </div>
 
 <div class="abs-br m-6 text-sm opacity-50">
-  Live Demo: http://localhost:3001
+  Live Demo: http://34.68.214.41:3000
 </div>
 
 ---
-transition: fade-out
-layout: two-cols
+layout: image-right
+image: https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1920&q=80
 ---
+
+# The Maritime Freight Industry
+
+**Global Trade Backbone**
+
+## Scale & Reach
+
+- **📦 90%** of world trade by sea
+- **🌍 180+** countries connected
+- **🚢 100,000+** cargo vessels worldwide
+- **⚓ 50,000+** ports & terminals
+- **👷 1.9M** seafarers employed
+
+## Economic Impact
+
+- **💰 $14 Trillion** annual goods value
+- **📊 $2 Trillion** shipping industry
+- **🛢️ 11 Billion** tons cargo/year
+- **⛽ $300B+** annual fuel costs
+- **📈 4-5%** annual growth rate
+
+<div class="mt-8 text-center text-lg font-bold text-blue-400">
+Maritime shipping is the circulatory system of global commerce
+</div>
+
+---
+layout: image-right
+image: https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=1920&q=80
+---
+
+# Industry Inefficiencies & Losses
+
+**The $100+ Billion Problem**
+
+## Known Inefficiencies
+
+**⛽ Fuel Waste: $30B+/year**
+- Inefficient routing
+- Speed optimization failures
+- Weather-related delays
+
+**⏱️ Port Delays: $40B+/year**
+- 20% of voyage time in port
+- Poor coordination
+- Documentation delays
+
+**📋 Compliance Costs: $15B+/year**
+- Manual reporting (200+ hrs/vessel/year)
+- Regulatory complexity (IMO, MARPOL, SOLAS)
+- Audit failures & fines
+
+## Major Loss Categories
+
+**🌪️ Weather-Related: $22B+/year**
+- Storm damage & delays
+- Route diversions
+- Cargo deterioration
+
+**🏴‍☠️ Criminal Activity: $7-12B/year**
+- Piracy incidents (Est. $7B)
+- Cargo theft & fraud
+
+**🗺️ Geopolitical: $20B+/year**
+- Trade route closures
+- Sanctions & conflicts
+
+<div class="mt-4 text-center text-lg font-bold text-red-400">
+Total addressable losses: $134+ Billion annually
+</div>
+
+---
+layout: image
+image: https://images.unsplash.com/photo-1494412651409-8963ce7935a7?w=1920&q=80
+---
+
+<div class="absolute top-10 left-10 right-10 bg-black bg-opacity-70 p-8 rounded-lg">
+
+<div class="grid grid-cols-2 gap-10">
+
+<div>
 
 # The Challenge
 
-<v-clicks>
+**Maritime vessels operate in harsh, dangerous environments**
 
-**Maritime vessels operate in harsh, disconnected environments**
-
-- 🌊 **30+ days** without internet connectivity
 - ⚠️ **Critical incidents** require immediate response
-- 📡 **Limited communication** with shore operations
 - 🛠️ **Complex compliance** requirements (IMO, MARPOL, SOLAS)
 - 💰 **High operational costs** (fuel, insurance, downtime)
+- 🔍 **No awareness of risks** that could be avoided
+- 🌊 **Weather endangers** cargo operations
 
-</v-clicks>
+</div>
 
-::right::
-
-<v-clicks>
+<div>
 
 # Our Solution
 
 **Offline-first AI platform with autonomous agents**
 
-- 🤖 **5 AI Agents** per vessel (Weather, Navigation, Incident, Compliance, Comms)
+- 🤖 **AI Agents with skills** per vessel (Weather, Navigation, Incident, Compliance, Comms)
+- 🎯 **Edge Computing** on embarked hardware
 - 📶 **30+ day offline operation** with local processing
-- 🎯 **Edge Computing** on NVIDIA Jetson hardware
 - 🌐 **Multi-org network** for data sharing
-- 🎤 **Voice-first interface** for hands-free operation
 
-</v-clicks>
+</div>
+
+</div>
+
+</div>
 
 ---
-layout: center
-class: text-center
----
-
-# System Architecture
-
-```mermaid {scale: 0.9}
-graph TD
-    A[Vessel Sensors<br/>GPS, AIS, Weather] --> B[NVIDIA Edge Device]
-    B --> C[5 AI Agents<br/>Local Processing]
-    C --> D[30-Day Cache]
-    D --> E{Connected?}
-    E -->|Yes| F[Cloud Dashboard]
-    E -->|No| G[Queue for Sync]
-    F --> H[Fleet Operations Center]
-    F --> I[Sister Companies]
-
-    style B fill:#76b900
-    style C fill:#ffd700
-    style F fill:#00a0ff
-    style H fill:#ff6b6b
-```
-
+layout: image-right
+image: https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1920&q=80
 ---
 
 # Technology Stack
 
-<div class="grid grid-cols-2 gap-10 px-8">
-
-<div>
-
 ## Frontend Dashboard
+- **GCP** Virtual Machines
 - **Next.js 15** + TypeScript
 - **Tailwind CSS** styling
 - **OpenLayers 10.6** maps
@@ -145,108 +200,48 @@ graph TD
 Built on OpenSeaMap (1,683 lines PHP, 17 APIs)
 </div>
 
-</div>
-
-<div>
-
-## Data Sources & Edge
-- **Weather:** Stormglass.io, Open-Meteo
-- **Regulations:** SOLAS chapters database
-- **Tracking:** AIS + GMDSS
-- **Edge AI:** NVIDIA Jetson
-- **Local LLM:** Llama/Mistral
-
-</div>
-
-</div>
-
 ---
-layout: image-right
-image: https://images.unsplash.com/photo-1530669378-5c8f1e0ff1e0?w=800&q=80
+layout: image
+image: /command-center.jpg
 ---
 
-# LIVE DEMO: Fleet Overview
+<div class="absolute top-10 left-10 right-10 bg-black bg-opacity-85 p-8 rounded-lg">
 
-**🌐 [localhost:3001](http://localhost:3001)**
+# Fleet Operations Command Center
 
-<div class="grid grid-cols-2 gap-8 mt-8">
+**Centralized monitoring and control for global maritime operations**
+
+<div class="grid grid-cols-3 gap-10 mt-6 text-sm">
 
 <div>
 
-### What You'll See
-
-<v-clicks>
-
-- **12 vessels** real-time status
-- **Fleet statistics** panel
-- **Connectivity** 🟢 🟡 🔴
-- **Fuel level** warnings
-- **Click vessel** for details
-
-</v-clicks>
+### Real-Time Fleet Visibility
+- 24/7 vessel monitoring across multiple time zones
+- Multi-screen dashboards with live data feeds
+- Global fleet status at a glance
+- Individual vessel health metrics
 
 </div>
 
 <div>
 
-### Key Features
-
-<v-clicks>
-
-- Auto-refresh (5 sec)
-- Color-coded status
-- GPS coordinates
-- Speed & heading
-- Destination & ETA
-
-</v-clicks>
-
-</div>
-
-</div>
-
----
-
-# LIVE DEMO: Incident Management
-
-**Switch to Incidents Tab** 👉 [localhost:3001](http://localhost:3001)
-
-<div class="grid grid-cols-2 gap-10 px-4">
-
-<div>
-
-## 8 Incident Types
-
-<v-clicks>
-
-- 🌪️ Weather
-- 🏴‍☠️ Criminal
-- 🗺️ Geopolitical
-- 💰 Financial
-- ⚙️ Mechanical
-- 🏥 Medical
-- 🛢️ Environmental
-- ⚠️ Dangerous
-
-</v-clicks>
+### Incident Response
+- Immediate alert handling and escalation
+- Coordinated emergency response protocols
+- Cross-vessel communication network
+- Expert support teams on standby
 
 </div>
 
 <div>
 
-## Features
+### Data-Driven Decisions
+- AI-powered predictive insights
+- Route optimization algorithms
+- Compliance tracking and reporting
+- Performance analytics and KPIs
 
-<v-clicks>
-
-- **Severity** (1-5 color)
-- **Status filtering**
-- **Type filtering**
-- **AI Recommendations**
-- **Location data**
-- **Damage tracking**
-- **Timestamps**
-
-</v-clicks>
+</div>
 
 </div>
 
@@ -256,15 +251,13 @@ image: https://images.unsplash.com/photo-1530669378-5c8f1e0ff1e0?w=800&q=80
 
 # LIVE DEMO: OpenSeaMap
 
-**Check out the Map Tab** 👉 [localhost:3001](http://localhost:3001)
+**Check out the Map Tab** 👉 [34.68.214.41:3000](http://34.68.214.41:3000)
 
 <div class="grid grid-cols-2 gap-10 px-4 mt-4">
 
 <div>
 
 ## Map Layers
-
-<v-clicks>
 
 - **Base OSM** tiles
 - **Seamark** overlays
@@ -273,22 +266,16 @@ image: https://images.unsplash.com/photo-1530669378-5c8f1e0ff1e0?w=800&q=80
 - **Incident** markers
 - **Measurement** tools
 
-</v-clicks>
-
 </div>
 
 <div>
 
 ## Try It!
 
-<v-clicks>
-
 - Click vessels
 - Toggle weather
 - Measure distance
 - Zoom & pan
-
-</v-clicks>
 
 </div>
 
@@ -298,15 +285,13 @@ image: https://images.unsplash.com/photo-1530669378-5c8f1e0ff1e0?w=800&q=80
 
 # LIVE DEMO: Vessel Details
 
-**Click any vessel card** 👉 [localhost:3001](http://localhost:3001)
+**Click any vessel card** 👉 [34.68.214.41:3000](http://34.68.214.41:3000)
 
 <div class="grid grid-cols-2 gap-10 px-4">
 
 <div>
 
 ## Vessel Info
-
-<v-clicks>
 
 **Status & Position**
 - Connectivity
@@ -320,244 +305,38 @@ image: https://images.unsplash.com/photo-1530669378-5c8f1e0ff1e0?w=800&q=80
 - Type & flag
 - IMO & MMSI
 
-</v-clicks>
-
 </div>
 
 <div>
 
 ## Intelligence
 
-<v-clicks>
-
 **Weather**
 - Temp, pressure
 - Wind, waves
 - Visibility
 
-**5 AI Agents**
+**AI Skills**
 - Weather
 - Navigation
 - Incident Response
 - Compliance
 - Communication
 
-</v-clicks>
-
 </div>
 
 </div>
 
 ---
-
-# AI Agent Capabilities
-
-**Three core AI functions powered by real maritime data**
-
-<div class="grid grid-cols-3 gap-6 mt-6 px-4 text-sm">
-
-<div>
-
-## 1. Auto-Populate Checklists
-
-- Pre-departure templates
-- Equipment vs SOLAS
-- Sensor data integration
-
-**Data:** SOLAS regs + vessel sensors
-
-</div>
-
-<div>
-
-## 2. Route Optimization
-
-- Weather forecast monitoring
-- Hazard avoidance
-- Alternative routing
-
-**Data:** Weather APIs + AIS
-
-</div>
-
-<div>
-
-## 3. Compliance Monitoring
-
-- Certificate expiration
-- Crew rest hours
-- Emission reporting
-
-**Data:** SOLAS + cert database
-
-</div>
-
-</div>
-
----
-
-# Offline-First Architecture
-
-**Critical for 30+ days without connectivity**
-
-<div class="grid grid-cols-2 gap-10 px-6">
-
-<div>
-
-## How It Works
-
-<v-clicks>
-
-1. **Local Processing** - NVIDIA edge
-2. **30-Day Cache** - Local storage
-3. **Queue Sync** - Smart priority
-4. **Confidence Scores** - Freshness
-5. **Manual Override** - Captain control
-
-</v-clicks>
-
-</div>
-
-<div>
-
-## Data Priority
-
-<v-clicks>
-
-**P1:** Position, speed, status
-
-**P2:** Route deviations
-
-**P3:** Incidents
-
-**P4:** Weather/oceanic
-
-**P5:** Route updates
-
-</v-clicks>
-
-</div>
-
-</div>
-
----
-layout: two-cols
----
-
-# Key Differentiators
-
-<v-clicks>
-
-## Why We're Unique
-
-1. **Offline-First**
-   - Only maritime platform designed for 30+ days offline
-
-2. **AI Agent Autonomy**
-   - 5 specialized agents per vessel
-
-3. **Edge Computing**
-   - NVIDIA-powered local processing
-
-</v-clicks>
-
-::right::
-
-<v-clicks>
-
-4. **Sister Company Network**
-   - Industry-first multi-org sharing
-
-5. **Audio-First Interface**
-   - Hands-free voice commands
-
-6. **Digital Twin Testing**
-   - Safe agent behavior simulation
-
-</v-clicks>
-
----
-
-# Development Roadmap
-
-<div class="text-sm px-8">
-
-<v-clicks>
-
-## Phase 1: MVP (M1-4) → $300K-$500K
-Single vessel, dashboard, incident reporting
-**Success:** 1 vessel, 24h offline
-
-## Phase 2: Multi-Vessel (M5-8) → $400K-$600K
-Fleet mgmt, advanced agents
-**Success:** 10 vessels, 30d offline
-
-## Phase 3: Digital Twin (M9-12) → $350K-$550K
-Simulation, analytics, multi-tenant
-**Success:** 100+ vessels, ROI
-
-## Phase 4: Scale (M13-18) → $450K-$700K
-Multi-org, mobile apps, marketplace
-**Success:** 1,000+ vessels
-
-</v-clicks>
-
-</div>
-
----
-
-# Success Metrics
-
-<div class="grid grid-cols-3 gap-4 text-sm">
-
-<div>
-
-## Operational
-
-- ⏱️ **< 5 min** response
-- ⛽ **10%** fuel gain
-- ⬇️ **50%** less downtime
-- ✅ **100%** compliance
-
-</div>
-
-<div>
-
-## Technical
-
-- 🟢 **99.9%** uptime
-- 🤖 **99.5%** accuracy
-- 📶 **30+ days** offline
-- ⚡ **< 5 sec** decisions
-
-</div>
-
-<div>
-
-## Business
-
-- 😊 **NPS > 50**
-- 💰 **18mo** ROI
-- 🚢 **100+** vessels
-- 🛡️ **15%** insurance↓
-
-</div>
-
-</div>
-
-<div class="mt-4 text-center text-lg font-bold text-green-400">
-Safety: 30% ↓ incidents • Zero injuries • 20% ↓ emissions
-</div>
-
+layout: image-right
+image: https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1920&q=80
 ---
 
 # Real-World Use Case: Heavy Weather
 
-<div class="text-sm px-4">
-
 **Scenario:** Vessel encounters Beaufort 9 storm (6m waves)
 
-<div class="grid grid-cols-2 gap-8 mt-4">
+<div class="grid grid-cols-1 gap-6 mt-4 text-sm">
 
 <div>
 
@@ -587,8 +366,6 @@ Safety: 30% ↓ incidents • Zero injuries • 20% ↓ emissions
 - Zero cargo damage
 - Full SOLAS compliance
 - Complete audit trail
-
-</div>
 
 </div>
 
@@ -668,8 +445,6 @@ Safety: 30% ↓ incidents • Zero injuries • 20% ↓ emissions
 
 ## ✅ Completed
 
-<v-clicks>
-
 - Fleet dashboard
 - Incident management
 - OpenSeaMap integration
@@ -680,15 +455,11 @@ Safety: 30% ↓ incidents • Zero injuries • 20% ↓ emissions
 - Dark mode
 - TypeScript
 
-</v-clicks>
-
 </div>
 
 <div>
 
 ## 🚀 Next Steps
-
-<v-clicks>
 
 1. Stakeholder review
 2. Technical validation
@@ -696,8 +467,6 @@ Safety: 30% ↓ incidents • Zero injuries • 20% ↓ emissions
 4. Partnerships (NVIDIA)
 5. Funding (18 months)
 6. Team assembly
-
-</v-clicks>
 
 </div>
 
@@ -715,7 +484,7 @@ class: text-center
 <div>
 
 ### Live Demo
-**Dashboard**: [localhost:3001](http://localhost:3001)
+**Dashboard**: [34.68.214.41:3000](http://34.68.214.41:3000)
 
 ### Resources
 - **GitHub**: OpenSeaMap/online_chart

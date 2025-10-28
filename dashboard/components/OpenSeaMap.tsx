@@ -71,23 +71,32 @@ export default function OpenSeaMap({
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Create base layers
+    // Create base layers - Using OpenSeaMap's base map for better maritime context
     const osmLayer = new TileLayer({
       source: new XYZ({
         url: isDarkMode
           ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
-          : 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          : 'https://tiles.openstreetmap.org/{z}/{x}/{y}.png',
         attributions: '© OpenStreetMap contributors'
       }),
     });
 
-    // OpenSeaMap overlay
+    // OpenSeaMap seamark overlay - nautical symbols, buoys, lights, etc.
     const seaMarkLayer = new TileLayer({
       source: new XYZ({
         url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
         attributions: '© OpenSeaMap contributors',
       }),
-      opacity: 0.8,
+      opacity: 1.0, // Full opacity for clear nautical markers
+    });
+
+    // OpenSeaMap depth contours layer for maritime context
+    const depthLayer = new TileLayer({
+      source: new XYZ({
+        url: 'https://tiles.openseamap.org/charts/base/{z}/{x}/{y}.png',
+        attributions: '© OpenSeaMap contributors',
+      }),
+      opacity: 0.3, // Subtle depth information
     });
 
     // Vessel layer
@@ -122,12 +131,13 @@ export default function OpenSeaMap({
     vesselLayerRef.current = vesselLayer;
 
     // Create map with enhanced controls
+    // Center on Strait of Malacca: 2.5°N, 101.5°E
     const map = new Map({
       target: mapRef.current,
-      layers: [osmLayer, seaMarkLayer, vesselLayer],
+      layers: [osmLayer, depthLayer, seaMarkLayer, vesselLayer], // Added depth layer for maritime context
       view: new View({
-        center: fromLonLat([0, 20]),
-        zoom: 3,
+        center: fromLonLat([101.5, 2.5]), // Strait of Malacca coordinates
+        zoom: 7, // Zoomed in to show the strait
         minZoom: 2,
         maxZoom: 18,
         enableRotation: true,
@@ -205,7 +215,7 @@ export default function OpenSeaMap({
       osmLayer.setSource(new XYZ({
         url: isDarkMode
           ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
-          : 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          : 'https://tiles.openstreetmap.org/{z}/{x}/{y}.png',
         attributions: '© OpenStreetMap contributors'
       }));
     }
